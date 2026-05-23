@@ -29,9 +29,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ContentCopy
@@ -79,7 +80,6 @@ fun OfflineMarkdownViewer(
     AppConfig.logCall(AppConfig.LOG_TAG_UI, "OfflineMarkdownViewer", "docId" to doc.id, "fileName" to doc.fileName)
 
     val context = LocalContext.current
-    val scrollState = rememberScrollState()
 
     // Safely look up companion Markdown file or cook fallback outline dynamically
     val markdownText = remember(doc) {
@@ -157,22 +157,23 @@ fun OfflineMarkdownViewer(
             .fillMaxSize()
             .testTag("markdown_viewer_layout")
     ) { innerPadding ->
-        Column(
+        val lines = remember(markdownText) { markdownText.split("\n") }
+
+        LazyColumn(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
-                .verticalScroll(scrollState)
-                .padding(18.dp)
+                .testTag("markdown_viewer_scroller"),
+            contentPadding = PaddingValues(18.dp)
         ) {
-            // Document header info box
-            MarkdownSummaryHeader(doc = doc)
+            item {
+                // Document header info box
+                MarkdownSummaryHeader(doc = doc)
+                Spacer(modifier = Modifier.height(20.dp))
+            }
 
-            Spacer(modifier = Modifier.height(20.dp))
-
-            // Body text area: Parse and format line-by-line natively
-            val lines = remember(markdownText) { markdownText.split("\n") }
-            lines.forEach { line ->
+            items(lines) { line ->
                 MarkdownLineRenderer(line = line)
             }
         }
