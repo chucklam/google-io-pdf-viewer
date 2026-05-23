@@ -1,0 +1,6 @@
+{
+  "name": "PDF Web Browser",
+  "description": "A built-in web browser that enables direct navigation, favorite sites management, automatic PDF downloads, and full offline document viewing.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
